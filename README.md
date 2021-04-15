@@ -1,6 +1,5 @@
-# almost-katamari
+# Almost Katamari
 Prototyping features to match Katamari Damacy
-
 
 ## Controls
 
