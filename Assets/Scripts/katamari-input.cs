@@ -31,7 +31,7 @@ public class @Katamariinput : IInputActionCollection, IDisposable
                     ""type"": ""Value"",
                     ""id"": ""911a8557-e2ed-4681-a983-fe3d01b333cf"",
                     ""expectedControlType"": ""Vector2"",
-                    ""processors"": """",
+                    ""processors"": ""NormalizeVector2"",
                     ""interactions"": """"
                 }
             ],
@@ -39,7 +39,7 @@ public class @Katamariinput : IInputActionCollection, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""0ea3b25e-a7b1-4665-9991-a6467e66259c"",
-                    ""path"": ""<Gamepad>/leftStick"",
+                    ""path"": ""<XInputController>/leftStick"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Gamepad"",
@@ -50,9 +50,9 @@ public class @Katamariinput : IInputActionCollection, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""35abe837-4780-49c3-b233-282789b503f0"",
-                    ""path"": ""<Gamepad>/rightStick"",
+                    ""path"": ""<XInputController>/rightStick"",
                     ""interactions"": """",
-                    ""processors"": ""NormalizeVector2"",
+                    ""processors"": """",
                     ""groups"": ""Gamepad"",
                     ""action"": ""Right Throttle"",
                     ""isComposite"": false,

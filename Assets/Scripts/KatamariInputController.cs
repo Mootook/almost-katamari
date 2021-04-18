@@ -13,71 +13,73 @@ public class KatamariInputController : MonoBehaviour
     /// The input as a normalized vector2
     /// from the left stick.
     /// </summary>
-    public Vector2 leftThrottle = Vector2.zero;
+    private Vector2 _leftThrottle = Vector2.zero;
 
     /// <summary>
     /// The input as a normalized vector2
     /// from the right stick.
     /// </summary>
-    public Vector2 rightThrottle = Vector2.zero;
-
-    /// <summary>
-    /// Potential force to be applied from inputs.
-    /// </summary>
-    public Vector3 nextForce = Vector3.zero;
+    private Vector2 _rightThrottle = Vector2.zero;
 
     /// <summary>
     /// The dot product of the left and right throttle input
     /// vectors.
     /// </summary>
-    private float _dot;
+    private float _dot = 0.0f;
+
+    /// <summary>
+    /// Potential force to be applied from inputs.
+    /// </summary>
+    [HideInInspector] public Vector3 nextForce = Vector3.zero;
+
+    /// <summary>
+    /// Reference to the camera controller to update rotation
+    /// on valid input.
+    /// </summary>
+    private SimpleCameraFollow _camController;
+
+    private void Start()
+    {
+        _camController = Camera.main.GetComponent<SimpleCameraFollow>();
+    }
 
     private void Update()
     {
-        if (leftThrottle != Vector2.zero && rightThrottle != Vector2.zero)
+        Vector3 localForce = Vector3.zero;
+        if (_leftThrottle != Vector2.zero && _rightThrottle != Vector2.zero)
         {
             // this if both inputs have values
             // if the dot > 0, consider it movement
             // if the dot == 0, nothing
             // if the dot < 0, rotation
-            _dot = Vector2.Dot(leftThrottle, rightThrottle);
-            nextForce = Vector3.zero;
+            _dot = Vector2.Dot(_leftThrottle, _rightThrottle);
             if (_dot > 0.0f)
             {
-                Debug.Log("Movement");
                 // average out the normalized input vectors
-                float avgX = (leftThrottle.x + rightThrottle.x) / 2;
-                float avgY = (leftThrottle.y + rightThrottle.y) / 2;
-                nextForce = new Vector3(avgX, 0.0f, avgY);
+                float avgX = (_leftThrottle.x + _rightThrottle.x) / 2;
+                float avgY = (_leftThrottle.y + _rightThrottle.y) / 2;
+                localForce = new Vector3(avgX, 0.0f, avgY);
+                _camController.HaltRotation();
             }
             else if (_dot < 0.0f)
-            {
-                // they're in opposite directions
-                Debug.Log("Accelerated camera rotation");
-            }
+                _camController.StickYToRotation(_leftThrottle.y, _rightThrottle.y, true);
         }
-        else if (leftThrottle != Vector2.zero)
-        {
-            // rightThrottle == Vector.zero
-            // this is a rotation
-        }
-        else if (rightThrottle != Vector2.zero)
-        {
-            // leftThrottle == Vector2.zero
-            // this is a rotation
-        }
+        else
+            _camController.StickYToRotation(_leftThrottle.y, _rightThrottle.y);
+        // only set nextForce once, at end of update call
+        nextForce = localForce;
     }
 
     #region Katamari Input Callbacks
 
     public void OnLeftThrottle(InputValue val)
     {
-        leftThrottle = val.Get<Vector2>();
+        _leftThrottle = val.Get<Vector2>();
     }
 
     public void OnRightThrottle(InputValue val)
     {
-        rightThrottle = val.Get<Vector2>();
+        _rightThrottle = val.Get<Vector2>();
     }
 
     #endregion
@@ -88,8 +90,8 @@ public class KatamariInputController : MonoBehaviour
         red.normal.textColor = Color.red;
         float fps = 1.0f / Time.smoothDeltaTime;
         GUI.Label(new Rect(0, 0, 100, 100), "FPS: " + fps.ToString(), red);        
-        GUI.Label(new Rect(0, 20, 100, 100), "Left Input: "  + leftThrottle.ToString(), red);
-        GUI.Label(new Rect(0, 40, 100, 100), "Right Input: "  + rightThrottle.ToString(), red);
+        GUI.Label(new Rect(0, 20, 100, 100), "Left Input: "  + _leftThrottle.ToString(), red);
+        GUI.Label(new Rect(0, 40, 100, 100), "Right Input: "  + _rightThrottle.ToString(), red);
         GUI.Label(new Rect(0, 60, 100, 100), "Dot: "  + _dot.ToString(), red);
     }
 }
