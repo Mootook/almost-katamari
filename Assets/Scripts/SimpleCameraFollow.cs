@@ -6,25 +6,55 @@ using UnityEngine;
 public class SimpleCameraFollow : MonoBehaviour
 {
 
+    /// <summary>
+    /// The transform of the game object to follow and orbit.
+    /// </summary>
     [SerializeField]
     Transform target = default;
 
+    /// <summary>
+    /// Store the target transform.position
+    /// each frame to calculate differences in movement
+    /// between frames.
+    /// </summary>
+    private Vector3 _targetPoint;
+
+    /// <summary>
+    /// Distance behind the game object.
+    /// </summary>
     [SerializeField, Range(1f, 20f)]
     private float distance = 8f;
 
+    /// <summary>
+    /// Space within viewport that acts as a 
+    /// "deadzone" so that the camera isn't following
+    /// the small, micro movements, katamari must break forceRadius
+    /// in order to trigger camera movement.
+    /// </summary>
     [SerializeField, Min(0f)]
     private float forceRadius = 1f;
 
     [SerializeField, Range(0f, 1f)]
     private float focusCentering = 0.5f;
 
-    private Vector3 _targetPoint;
-
+    /// <summary>
+    /// Angles on the x, y
+    /// that are used to orbit about the target gameObject
+    /// orbitAngle.y is what is set by rotation inputs from the player.
+    /// </summary>
     private Vector2 orbitAngles = new Vector2(0f, 0f);
 
+    /// <summary>
+    /// The un-accelerated rotation speed about the game object.
+    /// </summary>
     [SerializeField, Range(1f, 360f)]
     float baseRotationSpeed = 90f;
 
+    /// <summary>
+    /// The speed at which the camera "orbits" the katarmi
+    /// this defaults to baseRotationSpeed but can be increased
+    /// by a potential acceleration if input axis are opposites.
+    /// </summary>
     float rotationSpeed;
 
     /// <summary>
@@ -35,12 +65,20 @@ public class SimpleCameraFollow : MonoBehaviour
     /// </summary>
     private float rotationDir = 0;
 
+    /// <summary>
+    /// Set defaults.
+    /// </summary>
     private void Awake()
     {
         rotationSpeed = baseRotationSpeed;
         _targetPoint = target.position;
     }
 
+    /// <summary>
+    /// Do all of the camera position/rotation updates
+    /// in LateUpdate to ensure target's most up to date position
+    /// is referenced for calculations and tracking.
+    /// </summary>
     private void LateUpdate()
     {
         UpdateTarget();
@@ -81,6 +119,11 @@ public class SimpleCameraFollow : MonoBehaviour
             _targetPoint = nextTarget;
     }
 
+    /// <summary>
+    /// Read off of the rotationDir set
+    /// by the input controller to determine if rotation is in order.
+    /// Needs to be greater than scoped epsilon.
+    /// </summary>
     private void ManualRotation()
     {
         const float e = 0.001f;
@@ -89,9 +132,9 @@ public class SimpleCameraFollow : MonoBehaviour
     }
 
     /// <summary>
-    /// Convert the y values of the input on the sitcks.
-    /// Into an integer used for rotating camerea.
-    /// Positve on ly means clockwise (pushing with left hand),
+    /// Convert the y values of the input on the sticks
+    /// into an integer used for rotating camera.
+    /// Positive on ly means clockwise (pushing with left hand),
     /// negative on ly means counter clockwise (pulling with left hand)
     /// 
     /// Positive on ry mean counter-clockwise (pushing with right hand)
@@ -100,17 +143,29 @@ public class SimpleCameraFollow : MonoBehaviour
     /// </summary>
     /// <param name="ly"></param>
     /// <param name="ry"></param>
-    public void StickYToRotation (float ly, float ry, bool accelerated = false)
+    public void StickYToRotation(float ly, float ry)
     {
-        const float e = 0.001f;
+        const float e = 0.2f;
         if (ly > e || ly < -e)
             rotationDir = ly;
         else if (ry > e || ry < -e)
+            // invert the ry as it behaves as the inverse of ly for rotationDir
             rotationDir = -ry;
         else
             rotationDir = 0;
+        // this gets upset if it's an accelerated
+        // rotation by the Katamari's update call
+        // that reads potential for inverted input axis
+        rotationSpeed = baseRotationSpeed;
+    }
 
-        rotationSpeed = (accelerated) ? (baseRotationSpeed * 1.75f) : baseRotationSpeed;
+    /// <summary>
+    /// Accelerate the rotation if the vectors of the input sticks
+    /// are in opposite directions (dot ~< 0)
+    /// </summary>
+    public void AccelerateRotation()
+    {
+        rotationSpeed = baseRotationSpeed * 1.75f;
     }
 
     /// <summary>

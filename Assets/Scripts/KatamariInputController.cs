@@ -38,13 +38,24 @@ public class KatamariInputController : MonoBehaviour
     /// </summary>
     private SimpleCameraFollow _camController;
 
+    /// <summary>
+    /// Camera transform.
+    /// Needed to transform local movement vectors3 into 
+    /// vectors respective of camera rotation
+    /// </summary>
+    Transform _playerInputSpace;
+
     private void Start()
     {
+        _playerInputSpace = Camera.main.transform;
         _camController = Camera.main.GetComponent<SimpleCameraFollow>();
     }
 
     private void Update()
     {
+        // Update the camera
+        // with inputs first, potential overrides follow
+        _camController.StickYToRotation(_leftThrottle.y, _rightThrottle.y);
         Vector3 localForce = Vector3.zero;
         if (_leftThrottle != Vector2.zero && _rightThrottle != Vector2.zero)
         {
@@ -58,14 +69,25 @@ public class KatamariInputController : MonoBehaviour
                 // average out the normalized input vectors
                 float avgX = (_leftThrottle.x + _rightThrottle.x) / 2;
                 float avgY = (_leftThrottle.y + _rightThrottle.y) / 2;
-                localForce = new Vector3(avgX, 0.0f, avgY);
+                // gets the force upon the katamari
+                // relative to the camera transform
+                // so that forward respects camera rotation about y
+                localForce = _playerInputSpace.TransformDirection(
+                    new Vector3(avgX, 0.0f, avgY)
+                );
+                // unset any rotations that were going to be applied
+                // if this frame's set of inputs
+                // correspond to a movement,
+                // instead just halt the rotation
                 _camController.HaltRotation();
             }
             else if (_dot < 0.0f)
-                _camController.StickYToRotation(_leftThrottle.y, _rightThrottle.y, true);
+            {
+                // the sticks are in opposite directions,
+                // this just accelerates the rotation speed of the camera
+                _camController.AccelerateRotation();
+            }
         }
-        else
-            _camController.StickYToRotation(_leftThrottle.y, _rightThrottle.y);
         // only set nextForce once, at end of update call
         nextForce = localForce;
     }

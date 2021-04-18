@@ -648,11 +648,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 663646155}
-  targetOffset: {x: 0, y: 4, z: -12}
   distance: 8
   forceRadius: 1
-  focusCentering: 0.8
-  smoothTime: 0.1
+  focusCentering: 1
+  baseRotationSpeed: 90
 --- !u!850595691 &1136433524
 LightingSettings:
   m_ObjectHideFlags: 0
