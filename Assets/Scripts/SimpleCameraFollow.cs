@@ -23,7 +23,7 @@ public class SimpleCameraFollow : MonoBehaviour
     /// Distance behind the game object.
     /// </summary>
     [SerializeField, Range(1f, 20f)]
-    private float distance = 8f;
+    private float distance = 6f;
 
     /// <summary>
     /// Space within viewport that acts as a 
@@ -88,7 +88,7 @@ public class SimpleCameraFollow : MonoBehaviour
         Vector3 lookDirection = lookRotation * Vector3.forward;
         // Add one on the y to keep the camera off the ground
         Vector3 localPosition = (_targetPoint - lookDirection * distance);
-        localPosition.y += 1;
+        localPosition.y += 0.5f;
         transform.SetPositionAndRotation(localPosition, lookRotation);
     }
 

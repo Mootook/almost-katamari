@@ -45,10 +45,24 @@ public class KatamariInputController : MonoBehaviour
     /// </summary>
     Transform _playerInputSpace;
 
+    /// <summary>
+    /// Should we lock/hide the cursor in play mode?
+    /// Can be disabled with 'esc' if this is true.
+    /// </summary>
+    [SerializeField]
+    private bool _lockCursor = true;
+
     private void Start()
     {
         _playerInputSpace = Camera.main.transform;
         _camController = Camera.main.GetComponent<SimpleCameraFollow>();
+        // lock and hide the cursor
+        // if specified
+        if (_lockCursor)
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+        }
     }
 
     private void Update()
