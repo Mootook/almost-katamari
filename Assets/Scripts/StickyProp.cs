@@ -9,21 +9,26 @@ public class StickyProp : MonoBehaviour
     /// </summary>
     public bool isSticky;
 
-    private BoxCollider _boxCollider;
+    private MeshCollider _meshCollider;
     private SphereCollider _sphereCollider;
     private Rigidbody _rb;
 
+    private Mesh _mesh;
+
     private void Start()
     {
-        _boxCollider = GetComponent<BoxCollider>();
         _sphereCollider = GetComponent<SphereCollider>();
         _rb = GetComponent<Rigidbody>();
+
+        _mesh = GetComponentInChildren<MeshFilter>().mesh;
+        _meshCollider = GetComponentInChildren<MeshCollider>();
     }
 
-    private void OnTriggerEnter(Collider collider)
+    private void OnCollisionEnter(Collision collider)
     {
+
         if (
-            collider.tag == "Katamari" &&
+            collider.gameObject.tag == "Katamari" &&
             CanBeAbsorbed(collider.gameObject) &&
             isSticky
         )
@@ -58,10 +63,17 @@ public class StickyProp : MonoBehaviour
     /// </summary>
     private void StickToKatamari(GameObject katamari)
     {
-        _boxCollider.size = new Vector3(1, 1, 1);
-        _boxCollider.isTrigger = false;
-        _sphereCollider.isTrigger = false;
+        foreach (Transform child in transform)
+        {
+            if (child.tag == "PropMesh")
+                child.localScale /= 2;
+        }
         Destroy(_rb);
         transform.SetParent(katamari.transform);
+
+        KatamariController kController = katamari.GetComponent<KatamariController>();
+        kController.Expand();
+
+        // Lengthen the distance to camera here as well
     }
 }

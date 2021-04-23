@@ -5,6 +5,7 @@ using UnityEngine;
 public class KatamariController : MonoBehaviour
 {
     private KatamariInputController _input;
+    private SphereCollider _sphereCollider;
     private Rigidbody _rb;
     public float pushForce = 10.0f;
 
@@ -25,6 +26,7 @@ public class KatamariController : MonoBehaviour
     {
        _input = GetComponent<KatamariInputController>(); 
        _rb = GetComponent<Rigidbody>();
+       _sphereCollider = GetComponent<SphereCollider>();
     }
 
     private void FixedUpdate()
@@ -38,5 +40,10 @@ public class KatamariController : MonoBehaviour
         GUIStyle red = new GUIStyle();
         red.normal.textColor = Color.red;
         GUI.Label(new Rect(0, 80, 100, 100), "Bounds Size: "  + transform.localScale, red);
+    }
+
+    public void Expand()
+    {
+        _sphereCollider.radius += 0.005f;
     }
 }

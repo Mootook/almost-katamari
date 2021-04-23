@@ -23,7 +23,7 @@ public class SimpleCameraFollow : MonoBehaviour
     /// Distance behind the game object.
     /// </summary>
     [SerializeField, Range(1f, 20f)]
-    private float distance = 6f;
+    public float distance = 6f;
 
     /// <summary>
     /// Space within viewport that acts as a 

@@ -7,6 +7,7 @@ TagManager:
   - Collide
   - No Collide
   - Katamari
+  - PropMesh
   layers:
   - Default
   - TransparentFX
