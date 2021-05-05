@@ -4,21 +4,20 @@ using UnityEngine;
 
 public class StickyProp : MonoBehaviour
 {
-    /// <summary>
-    /// Should this prop be able to be absorb by the katamari?
-    /// </summary>
-    public bool isSticky;
-
     private MeshCollider _meshCollider;
-    private SphereCollider _sphereCollider;
     private Rigidbody _rb;
-
     private Mesh _mesh;
+    private SimpleCameraFollow _camController;
+
+    // size
+    // in m
+    // of object
+    public float size;
 
     private void Start()
     {
-        _sphereCollider = GetComponent<SphereCollider>();
         _rb = GetComponent<Rigidbody>();
+        _camController = Camera.main.GetComponent<SimpleCameraFollow>();
 
         _mesh = GetComponentInChildren<MeshFilter>().mesh;
         _meshCollider = GetComponentInChildren<MeshCollider>();
@@ -29,8 +28,7 @@ public class StickyProp : MonoBehaviour
 
         if (
             collider.gameObject.tag == "Katamari" &&
-            CanBeAbsorbed(collider.gameObject) &&
-            isSticky
+            CanBeAbsorbed(collider.gameObject)
         )
         {
             StickToKatamari(collider.gameObject);
@@ -48,7 +46,7 @@ public class StickyProp : MonoBehaviour
     {
         KatamariController kController = katamari.GetComponent<KatamariController>();
         float katamariSize = kController.size;
-        return true;
+        return katamariSize > size;
     }
 
     /// <summary>
@@ -65,6 +63,9 @@ public class StickyProp : MonoBehaviour
     {
         foreach (Transform child in transform)
         {
+            // scale down the mesh colliders
+            // of picked up objects so that they dont
+            // upset the sphere collider too much
             if (child.tag == "PropMesh")
                 child.localScale /= 2;
         }
@@ -72,8 +73,9 @@ public class StickyProp : MonoBehaviour
         transform.SetParent(katamari.transform);
 
         KatamariController kController = katamari.GetComponent<KatamariController>();
-        kController.Expand();
-
-        // Lengthen the distance to camera here as well
+        kController.Expand(size);
+        // this only seems to
+        // happen after certain size thresholds
+        _camController.ExtendDistance();
     }
 }

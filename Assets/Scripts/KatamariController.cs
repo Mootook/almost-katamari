@@ -9,18 +9,9 @@ public class KatamariController : MonoBehaviour
     private Rigidbody _rb;
     public float pushForce = 10.0f;
 
-    /// <summary>
-    /// Since the x, y, and z values of the katamari's
-    /// local scale will all be the same,
-    /// just return one of them to get the katamari's size.
-    /// </summary>
-    /// <value></value>
-    public float size
-    {
-        get { return transform.localScale.x; }
-        // this value is not writable
-        set { return; }
-    }
+    // 1 == m
+    // 0.1 == cm
+    public float size = 1.0f;
 
     private void Start()
     {
@@ -39,11 +30,14 @@ public class KatamariController : MonoBehaviour
     {
         GUIStyle red = new GUIStyle();
         red.normal.textColor = Color.red;
-        GUI.Label(new Rect(0, 80, 100, 100), "Bounds Size: "  + transform.localScale, red);
+        GUI.Label(new Rect(0, 80, 100, 100), "Katamari Size: "  + size, red);
     }
 
-    public void Expand()
+    public void Expand(float s)
     {
         _sphereCollider.radius += 0.005f;
+        // add the newly picked up object's
+        // size to the katamari's
+        size += s / 2;
     }
 }

@@ -61,7 +61,11 @@ PrefabInstance:
       objectReference: {fileID: 4300000, guid: 63e10142da3fee44398a6d2f2ed913e8, type: 3}
     - target: {fileID: 7125186531162140552, guid: c87c54192b67624469b8ae3dad97b3b5, type: 3}
       propertyPath: m_Name
-      value: Bin
+      value: prop_bin
+      objectReference: {fileID: 0}
+    - target: {fileID: 7125186531162140554, guid: c87c54192b67624469b8ae3dad97b3b5, type: 3}
+      propertyPath: size
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 7125186531287460716, guid: c87c54192b67624469b8ae3dad97b3b5, type: 3}
       propertyPath: m_TagString
