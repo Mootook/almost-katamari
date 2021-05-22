@@ -22,10 +22,11 @@ public class SimpleCameraFollow : MonoBehaviour
     /// <summary>
     /// Distance behind the game object.
     /// </summary>
-    [SerializeField, Range(1f, 20f)]
-    public float distanceZ = 6f;
+    [SerializeField, Range(0.0f, 20f)]
+    public float distanceZ = 0f;
 
-    public float distanceY = 1f;
+    [SerializeField, Range(0.0f, 20f)]
+    public float distanceY = 0f;
 
     /// <summary>
     /// Space within viewport that acts as a 
@@ -43,8 +44,13 @@ public class SimpleCameraFollow : MonoBehaviour
     /// Angles on the x, y
     /// that are used to orbit about the target gameObject
     /// orbitAngle.y is what is set by rotation inputs from the player.
+    /// 
+    /// orbitAngle.x defines how much the camera is looking "down" on the katamari
+    /// 90 means eagle eye view.
+    /// This value is generally between 0 and 90.
+    /// 
     /// </summary>
-    private Vector2 orbitAngles = new Vector2(0f, 0f);
+    private Vector2 orbitAngles = new Vector2(30f, 0f);
 
     /// <summary>
     /// The un-accelerated rotation speed about the game object.

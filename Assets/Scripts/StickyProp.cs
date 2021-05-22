@@ -4,10 +4,16 @@ using UnityEngine;
 
 public class StickyProp : MonoBehaviour
 {
-    private MeshCollider _meshCollider;
     private Rigidbody _rb;
     private Mesh _mesh;
     private SimpleCameraFollow _camController;
+    public bool isSticky = false;
+
+    /// <summary>
+    /// How much should the child colliders shrink once
+    /// absorbed?
+    /// </summary>
+    private readonly int COLLIDER_SHRINK_SCALE = 4;
 
     // size
     // in m
@@ -18,20 +24,47 @@ public class StickyProp : MonoBehaviour
     {
         _rb = GetComponent<Rigidbody>();
         _camController = Camera.main.GetComponent<SimpleCameraFollow>();
+    }
 
-        _mesh = GetComponentInChildren<MeshFilter>().mesh;
-        _meshCollider = GetComponentInChildren<MeshCollider>();
+    private GameObject CompoundCollider()
+    {
+        foreach (Transform child in transform)
+        {
+            if (child.tag == "PropMesh")
+            {
+                return child.gameObject;
+            }
+        }
+        return null;
     }
 
     private void OnCollisionEnter(Collision collider)
     {
-
-        if (
-            collider.gameObject.tag == "Katamari" &&
-            CanBeAbsorbed(collider.gameObject)
-        )
+        if (collider.gameObject.tag == "Katamari")
         {
-            StickToKatamari(collider.gameObject);
+            KatamariController kController = collider.gameObject.GetComponent<KatamariController>();
+            if (CanBeAbsorbed(kController))
+            {
+                StickToKatamari(collider.gameObject);
+            }
+            else if (!isSticky)
+            {
+                // probably should expand this
+                // calc the normals so we're not throwing items off
+                // Vector3 collisionForce = collider.impulse / Time.fixedDeltaTime;
+                // Debug.Log("Collision Magnitude" + collisionForce.magnitude);
+                // kController.OnRejectedCollision();
+            }
+            // expand this else check here...
+            // because some objects like the desk,
+            // start as surfaces that are eventually
+            // "pickup-able", I think it makes sense to
+            // have thresholds throughout game where,
+            // objects below a certain size are should not register with this check
+            // for instance, !isSticky.
+            // At certain thresholds we can loop
+            // over game objects and make some more in a certain range sticky.
+
         }
     }
 
@@ -42,11 +75,22 @@ public class StickyProp : MonoBehaviour
     /// </summary>
     /// <param name="katamari">The Katamari</param>
     /// <returns>boolean indicating whether or not the katamari can absorb this game object prop.</returns>
-    private bool CanBeAbsorbed(GameObject katamari)
+    private bool CanBeAbsorbed(KatamariController katamari)
     {
-        KatamariController kController = katamari.GetComponent<KatamariController>();
-        float katamariSize = kController.size;
+        float katamariSize = katamari.size;
         return katamariSize > size;
+    }
+
+    /// <summary>
+    /// Get the child container for compound colliders.
+    /// </summary>
+    /// <returns></returns>
+    private Transform ChildColliderParent()
+    {
+        foreach (Transform child in transform)
+            if (child.tag == "PropMesh")
+                return child;
+        return null;
     }
 
     /// <summary>
@@ -61,21 +105,21 @@ public class StickyProp : MonoBehaviour
     /// </summary>
     private void StickToKatamari(GameObject katamari)
     {
-        foreach (Transform child in transform)
-        {
-            // scale down the mesh colliders
-            // of picked up objects so that they dont
-            // upset the sphere collider too much
-            if (child.tag == "PropMesh")
-                child.localScale /= 2;
-        }
         Destroy(_rb);
-        transform.SetParent(katamari.transform);
-
         KatamariController kController = katamari.GetComponent<KatamariController>();
-        kController.Expand(size);
+        kController.OnPropPickup(this);
         // this only seems to
         // happen after certain size thresholds
         _camController.ExtendDistance();
+        transform.SetParent(katamari.transform);
+        // by shrinking the local position, once it's parented
+        // we can move the collider more towards the Katamari's center.
+        transform.localPosition /= 1.6f;
+        Transform childCollder = ChildColliderParent();
+        // scale down the mesh colliders
+        // of picked up objects so that they don't
+        // upset the sphere collider too much
+        if (childCollder)
+            childCollder.localScale /= COLLIDER_SHRINK_SCALE;
     }
 }
