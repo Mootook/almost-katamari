@@ -10,6 +10,11 @@ public class KatamariController : MonoBehaviour
     public float pushForce = 10.0f;
     private List<StickyProp> _stuckProps;
 
+    public Vector3 center {
+        get { return _rb.worldCenterOfMass; }
+        private set {}
+    }
+
     // 1 == m
     // 0.1 == cm
     public float size = 1.0f;

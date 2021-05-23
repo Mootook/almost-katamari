@@ -1,6 +1,50 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1001 &3839023343523448802
+--- !u!1 &9694385
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 9694386}
+  - component: {fileID: 9694387}
+  m_Layer: 7
+  m_Name: collider
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &9694386
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9694385}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.014, z: 0}
+  m_LocalScale: {x: 0.07, y: 0.031640626, z: 0.1096875}
+  m_Children: []
+  m_Father: {fileID: 6848938495753124924}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &9694387
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9694385}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!1001 &4462484628947965779
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -17,15 +61,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7125186531162140550, guid: c87c54192b67624469b8ae3dad97b3b5, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 1.360445
+      value: -0.176
       objectReference: {fileID: 0}
     - target: {fileID: 7125186531162140550, guid: c87c54192b67624469b8ae3dad97b3b5, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -2.488936
+      value: 1.024
       objectReference: {fileID: 0}
     - target: {fileID: 7125186531162140550, guid: c87c54192b67624469b8ae3dad97b3b5, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.5003737
+      value: 0.202
       objectReference: {fileID: 0}
     - target: {fileID: 7125186531162140550, guid: c87c54192b67624469b8ae3dad97b3b5, type: 3}
       propertyPath: m_LocalRotation.w
@@ -58,23 +102,23 @@ PrefabInstance:
     - target: {fileID: 7125186531162140551, guid: c87c54192b67624469b8ae3dad97b3b5, type: 3}
       propertyPath: m_Mesh
       value: 
-      objectReference: {fileID: 4300000, guid: 63e10142da3fee44398a6d2f2ed913e8, type: 3}
+      objectReference: {fileID: 4300000, guid: 9aae3edf41785d140ae72ae02b380a7a, type: 3}
     - target: {fileID: 7125186531162140552, guid: c87c54192b67624469b8ae3dad97b3b5, type: 3}
       propertyPath: m_Name
-      value: prop_bin
+      value: prop_mouse
       objectReference: {fileID: 0}
     - target: {fileID: 7125186531162140554, guid: c87c54192b67624469b8ae3dad97b3b5, type: 3}
       propertyPath: size
-      value: 0.5
+      value: 1.5
       objectReference: {fileID: 0}
-    - target: {fileID: 7125186531287460716, guid: c87c54192b67624469b8ae3dad97b3b5, type: 3}
-      propertyPath: m_TagString
-      value: PropMesh
+    - target: {fileID: 7125186531162140554, guid: c87c54192b67624469b8ae3dad97b3b5, type: 3}
+      propertyPath: isSticky
+      value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 7125186531287460718, guid: c87c54192b67624469b8ae3dad97b3b5, type: 3}
-      propertyPath: m_Mesh
-      value: 
-      objectReference: {fileID: 4300000, guid: 63e10142da3fee44398a6d2f2ed913e8, type: 3}
-    m_RemovedComponents:
-    - {fileID: 7125186531162140549, guid: c87c54192b67624469b8ae3dad97b3b5, type: 3}
+    m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c87c54192b67624469b8ae3dad97b3b5, type: 3}
+--- !u!4 &6848938495753124924 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7125186531287460719, guid: c87c54192b67624469b8ae3dad97b3b5, type: 3}
+  m_PrefabInstance: {fileID: 4462484628947965779}
+  m_PrefabAsset: {fileID: 0}

@@ -13,7 +13,7 @@ public class StickyProp : MonoBehaviour
     /// How much should the child colliders shrink once
     /// absorbed?
     /// </summary>
-    private readonly int COLLIDER_SHRINK_SCALE = 4;
+    private readonly float COLLIDER_SHRINK_SCALE = 3.5f;
 
     // size
     // in m
@@ -49,11 +49,17 @@ public class StickyProp : MonoBehaviour
             }
             else if (!isSticky)
             {
+                // Climbing should be done here
+
                 // probably should expand this
                 // calc the normals so we're not throwing items off
                 // Vector3 collisionForce = collider.impulse / Time.fixedDeltaTime;
                 // Debug.Log("Collision Magnitude" + collisionForce.magnitude);
-                // kController.OnRejectedCollision();
+            }
+            else
+            {
+                // Vector3 colNorm = collider.contacts[0].normal;
+                kController.OnRejectedCollision();
             }
             // expand this else check here...
             // because some objects like the desk,
@@ -77,6 +83,10 @@ public class StickyProp : MonoBehaviour
     /// <returns>boolean indicating whether or not the katamari can absorb this game object prop.</returns>
     private bool CanBeAbsorbed(KatamariController katamari)
     {
+        // TODO:
+        // get point of contact? for more specifity of whether or not
+        // object should be picked up.
+        // https://docs.unity3d.com/ScriptReference/Collision-contacts.html
         float katamariSize = katamari.size;
         return katamariSize > size;
     }
@@ -114,12 +124,24 @@ public class StickyProp : MonoBehaviour
         transform.SetParent(katamari.transform);
         // by shrinking the local position, once it's parented
         // we can move the collider more towards the Katamari's center.
-        transform.localPosition /= 1.6f;
-        Transform childCollder = ChildColliderParent();
+        transform.localPosition /= 1.4f;
+        Transform compoundCollider = ChildColliderParent();
+        compoundCollider.gameObject.layer = LayerMask.NameToLayer("Absorbed");
         // scale down the mesh colliders
         // of picked up objects so that they don't
         // upset the sphere collider too much
-        if (childCollder)
-            childCollder.localScale /= COLLIDER_SHRINK_SCALE;
+        if (compoundCollider)
+        {
+            compoundCollider.localScale /= COLLIDER_SHRINK_SCALE;
+            compoundCollider.position = (kController.center + transform.position) / 2;
+            // if it's a compound collider, account for its
+            // colliders listed as children
+            foreach (Transform collider in compoundCollider)
+            {
+                // set the collider to different layer so
+                // it doesn't upset being inside sphere collider
+                collider.gameObject.layer = LayerMask.NameToLayer("Absorbed");
+            }
+        }
     }
 }
