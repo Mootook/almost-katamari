@@ -47,8 +47,7 @@ public class KatamariController : MonoBehaviour
     private float minGroundDotProduct, minClimbDotProduct, minClimbInputDot;
 
     private bool Climbing => climbContactCount > 0 && Vector3.Dot(lastClimbNormal, _input.nextForce) < minClimbInputDot;
-    public Vector3 center => _rb.worldCenterOfMass;
-    public float radius => _sphereCollider.radius;
+    public Vector3 Center => _rb.worldCenterOfMass;
 
     #endregion
 

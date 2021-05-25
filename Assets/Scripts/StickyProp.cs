@@ -132,7 +132,7 @@ public class StickyProp : MonoBehaviour
         if (compoundCollider)
         {
             compoundCollider.localScale /= COLLIDER_SHRINK_SCALE;
-            compoundCollider.position = (kController.center + transform.position) / 2;
+            compoundCollider.position = (kController.Center + transform.position) / 2;
             // if it's a compound collider, account for its
             // colliders listed as children
             foreach (Transform collider in compoundCollider)
