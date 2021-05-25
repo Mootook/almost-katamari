@@ -13,7 +13,7 @@ public class StickyProp : MonoBehaviour
     /// How much should the child colliders shrink once
     /// absorbed?
     /// </summary>
-    private readonly float COLLIDER_SHRINK_SCALE = 3.5f;
+    private readonly float COLLIDER_SHRINK_SCALE = 1.5f;
 
     // size
     // in m
@@ -47,18 +47,17 @@ public class StickyProp : MonoBehaviour
             {
                 StickToKatamari(collider.gameObject);
             }
-            else if (!isSticky)
-            {
-                // Climbing should be done here
-
-                // probably should expand this
-                // calc the normals so we're not throwing items off
-                // Vector3 collisionForce = collider.impulse / Time.fixedDeltaTime;
-                // Debug.Log("Collision Magnitude" + collisionForce.magnitude);
-            }
             else
             {
-                // Vector3 colNorm = collider.contacts[0].normal;
+                // Climbing should be done here
+                // probably should expand this
+                // calc the normals so we're not throwing items off
+                if (gameObject.layer != 6)
+                {
+                    // Vector3 collisionForce = collider.impulse / Time.fixedDeltaTime;
+                    // Debug.Log("Collision Magnitude" + collisionForce);
+                    GameManager.Instance.OnPropRejection();
+                }
                 kController.OnRejectedCollision();
             }
             // expand this else check here...
@@ -143,5 +142,6 @@ public class StickyProp : MonoBehaviour
                 collider.gameObject.layer = LayerMask.NameToLayer("Absorbed");
             }
         }
+        GameManager.Instance.OnPropPickup(gameObject);
     }
 }
