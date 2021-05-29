@@ -13,7 +13,7 @@ public class StickyProp : MonoBehaviour
     /// How much should the child colliders shrink once
     /// absorbed?
     /// </summary>
-    private readonly float COLLIDER_SHRINK_SCALE = 1.5f;
+    private readonly float COLLIDER_SHRINK_SCALE = 2.0f;
 
     // size
     // in m
@@ -117,18 +117,13 @@ public class StickyProp : MonoBehaviour
         Destroy(_rb);
         KatamariController kController = katamari.GetComponent<KatamariController>();
         kController.OnPropPickup(this);
-        // this only seems to
-        // happen after certain size thresholds
-        _camController.ExtendDistance();
+        // _camController.ExtendDistance();
         transform.SetParent(katamari.transform);
         // by shrinking the local position, once it's parented
         // we can move the collider more towards the Katamari's center.
         transform.localPosition /= 1.4f;
         Transform compoundCollider = ChildColliderParent();
         compoundCollider.gameObject.layer = LayerMask.NameToLayer("Absorbed");
-        // scale down the mesh colliders
-        // of picked up objects so that they don't
-        // upset the sphere collider too much
         if (compoundCollider)
         {
             compoundCollider.localScale /= COLLIDER_SHRINK_SCALE;
@@ -143,5 +138,19 @@ public class StickyProp : MonoBehaviour
             }
         }
         GameManager.Instance.OnPropPickup(gameObject);
+        // TODO:
+        // - [ ] Destroy colliders after some time or
+        //       after some threshold (list length and index?).
+    }
+
+    private IEnumerator DestroyCollider()
+    {
+        yield return new WaitForSeconds(10);
+        Transform collider = ChildColliderParent();
+        if (collider)
+        {
+            Debug.Log("Destroyed");
+            Destroy(collider.gameObject);
+        }
     }
 }

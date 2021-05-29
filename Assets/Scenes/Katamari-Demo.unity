@@ -235,11 +235,17 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!4 &663646155 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 2757326761975444870, guid: 3d4acca1622a2734db06d81085edae29, type: 3}
+--- !u!114 &576834701 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2757326761975444866, guid: 3d4acca1622a2734db06d81085edae29, type: 3}
   m_PrefabInstance: {fileID: 2757326762604436045}
   m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 85af921a3833ad24eb1041ff6d351f73, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &685550892
 GameObject:
   m_ObjectHideFlags: 0
@@ -482,7 +488,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh37374
+  m_Name: pb_Mesh21282
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -736,19 +742,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d4aedf57b4e32a4fac1306cadf531bd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 663646155}
-  distanceZ: 6
-  distanceY: 1
-  forceRadius: 1
-  focusCentering: 1
-  baseRotationSpeed: 90
+  scale: 5.5
+  boomDirection: {x: 0, y: 3, z: -12}
+  katamari: {fileID: 576834701}
 --- !u!43 &1120072433
 Mesh:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh-62032
+  m_Name: pb_Mesh21244
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -1637,7 +1640,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh-66408
+  m_Name: pb_Mesh21268
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -3230,7 +3233,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh-67812
+  m_Name: pb_Mesh21294
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -3401,11 +3404,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2757326761975444865, guid: 3d4acca1622a2734db06d81085edae29, type: 3}
       propertyPath: m_Mass
-      value: 20
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 2757326761975444865, guid: 3d4acca1622a2734db06d81085edae29, type: 3}
       propertyPath: m_UseGravity
-      value: 0
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2757326761975444865, guid: 3d4acca1622a2734db06d81085edae29, type: 3}
+      propertyPath: m_AngularDrag
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 2757326761975444866, guid: 3d4acca1622a2734db06d81085edae29, type: 3}
       propertyPath: gravity
@@ -3415,6 +3422,10 @@ PrefabInstance:
       propertyPath: pushForce
       value: 10
       objectReference: {fileID: 0}
+    - target: {fileID: 2757326761975444866, guid: 3d4acca1622a2734db06d81085edae29, type: 3}
+      propertyPath: cameraFollow
+      value: 
+      objectReference: {fileID: 963194229}
     - target: {fileID: 2757326761975444866, guid: 3d4acca1622a2734db06d81085edae29, type: 3}
       propertyPath: climbMask.m_Bits
       value: 447
@@ -3461,19 +3472,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2757326761975444870, guid: 3d4acca1622a2734db06d81085edae29, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 1
+      value: 0.9892285
       objectReference: {fileID: 0}
     - target: {fileID: 2757326761975444870, guid: 3d4acca1622a2734db06d81085edae29, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 2757326761975444870, guid: 3d4acca1622a2734db06d81085edae29, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: 0.14637981
       objectReference: {fileID: 0}
     - target: {fileID: 2757326761975444870, guid: 3d4acca1622a2734db06d81085edae29, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 2757326761975444870, guid: 3d4acca1622a2734db06d81085edae29, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -3481,7 +3492,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2757326761975444870, guid: 3d4acca1622a2734db06d81085edae29, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
+      value: 16.834
       objectReference: {fileID: 0}
     - target: {fileID: 2757326761975444870, guid: 3d4acca1622a2734db06d81085edae29, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
