@@ -6,8 +6,8 @@ using UnityEngine;
 public class SimpleCameraFollow : MonoBehaviour
 {
     private float orbitRadius;
-    public float scale = 5.5f;
-    public Vector3 boomDirection = new Vector3(0, 3, -12);
+    public float scale = 1f;
+    public Vector3 boomDirection = new Vector3(0, 0.25f, -1);
 
     public KatamariController katamari;
 

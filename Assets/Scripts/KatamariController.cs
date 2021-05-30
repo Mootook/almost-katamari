@@ -9,24 +9,24 @@ public class KatamariController : MonoBehaviour
     private SphereCollider sphereCollider;
     private Rigidbody rigidBody;
     private List<StickyProp> stuckProps;
-    private Transform playerInputSpace;
 
     public float size = 1.0f;
 
     [Header("Movement")]
-    [Tooltip("How much force to apply to katamari")]
-    public float pushForce = 10.0f;
     [SerializeField, Range(0, 90)]
     float maxGroundAngle = 25f;
+    [SerializeField]
+    private float rotationMultiplier = 80.0f;
+    [SerializeField]
+    private float torqueMultiplier = 750.0f;
+    [SerializeField]
+    private float forceMultiplier = 250.0f;
 
     [Header("Climbing")]
-    public float maxClimbSpeed = 500.0f;
-    public float climbDelta = 2.0f;
-
+    public float climbForceMultiplier = 5.0f;
     [SerializeField, Range(90, 180)]
     [Tooltip("The maximum angle of object that can be climb.")]
-    float maxClimbAngle = 140f;
-
+    float maxClimbAngle = 180.0f;
     [SerializeField, Range(0, 90)]
     [Tooltip("The maximum angle between an object and input to be considered climbing (lower = more difficult)")]
     public float maxInputClimbAngle = 25f;
@@ -36,16 +36,19 @@ public class KatamariController : MonoBehaviour
     LayerMask climbMask = -1;
 
     private Vector3 velocity;
-    private Rigidbody connectedBody, previousConnectedBody;
     private Vector3 contactNormal, climbNormal, lastClimbNormal;
+
     private int groundContactCount, climbContactCount;
     private float minGroundDotProduct, minClimbDotProduct, minClimbInputDot;
 
     private bool OnGround => groundContactCount > 0;
-    private bool Climbing => climbContactCount > 0 && Vector3.Dot(lastClimbNormal, input.nextForce) < minClimbInputDot;
-    public Vector3 Center => rigidBody.worldCenterOfMass;
+    private bool Climbing => climbContactCount > 0 && Vector3.Dot(lastClimbNormal, velocity) < minClimbInputDot;
+    // private bool Climbing => climbContactCount > 0;
     public float Radius => sphereCollider.radius;
-    private float maxClimbSpeedWithMass => maxClimbSpeed * rigidBody.mass;
+    public Vector3 Center => rigidBody.worldCenterOfMass;
+
+    private float torqueMultiplierWithMass => torqueMultiplier * rigidBody.mass;
+    private float airborneForceMultiplier => forceMultiplier / 2.0f;
 
     private Renderer katamariRenderer;
     private Color defaultColor;
@@ -71,8 +74,6 @@ public class KatamariController : MonoBehaviour
 
     void Start()
     {
-        playerInputSpace = Camera.main.transform;
-
         stuckProps = new List<StickyProp>();
 
         input = GetComponent<KatamariInputController>();
@@ -87,7 +88,7 @@ public class KatamariController : MonoBehaviour
 
     private void Update()
     {
-        rotationY += input.nextForce.y * Time.deltaTime * 80.0f;
+        rotationY += input.nextForce.y * Time.deltaTime * rotationMultiplier;
     }
 
 
@@ -105,9 +106,13 @@ public class KatamariController : MonoBehaviour
         float forwardInput = input.nextForce.z;
         float lateralInput = input.nextForce.x;
 
-        Vector3 forward = new Vector3(0, rotationY, 0);
-        Vector3 torque = new Vector3(forwardInput * 500, input.nextForce.y * 1500, -lateralInput * 1500);
+        Vector3 torque = new Vector3(
+            forwardInput * torqueMultiplierWithMass,
+            input.nextForce.y * torqueMultiplierWithMass,
+            -lateralInput * torqueMultiplierWithMass
+        );
 
+        Vector3 forward = new Vector3(0, rotationY, 0);
         rigidBody.AddTorque(Quaternion.Euler(forward) * torque);
     }
 
@@ -116,20 +121,26 @@ public class KatamariController : MonoBehaviour
         float lateralInput = input.nextForce.x;
         float forwardInput = input.nextForce.z;
 
+        float forceForContactState = OnGround ? forceMultiplier : airborneForceMultiplier;
+
+        Vector3 force = new Vector3(
+            lateralInput * forceForContactState,
+            ClimbingForce(),
+            forwardInput * forceForContactState
+        );
+
         Vector3 forward = new Vector3(0, rotationY, 0);
-        Vector3 force = new Vector3(lateralInput * 100, ClimbingForce(), forwardInput * 100);
-
-        rigidBody.AddForce(Quaternion.Euler(forward) * force);
+        velocity = Quaternion.Euler(forward) * force;
+        rigidBody.AddForce(velocity);
     }
-
 
     float ClimbingForce()
     {
-        float upwardVelocity = 0;
+        float upwardVelocity = 0.0f;
         if (Climbing)
         {
             katamariRenderer.material.SetColor("_Color", Color.red);
-            upwardVelocity += 10 * rigidBody.mass;
+            upwardVelocity += climbForceMultiplier * rigidBody.mass;
         }
         else
         {
@@ -143,9 +154,6 @@ public class KatamariController : MonoBehaviour
     {
         groundContactCount = climbContactCount = 0;
         contactNormal = climbNormal = Vector3.zero;
-        // connectionVelocity = Vector3.zero;
-        previousConnectedBody = connectedBody;
-        connectedBody = null;
     }
 
     #endregion
@@ -164,97 +172,90 @@ public class KatamariController : MonoBehaviour
 
     private void EvaluateCollision(Collision collision)
     {
+        bool didStick = AttemptStick(collision);
+        if (AttemptStick(collision))
+            return;
+
         int layer = collision.gameObject.layer;
         for (int i = 0; i < collision.contactCount; i++)
         {
             Vector3 normal = collision.GetContact(i).normal;
             float upDot = Vector3.Dot(Vector3.up, normal);
-            if (upDot >= minGroundDotProduct)
-            {
-                groundContactCount += 1;
-                contactNormal += normal;
-                connectedBody = collision.rigidbody;
-            }
-            else if (
-              upDot >= minClimbDotProduct &&
-              (climbMask & (1 << layer)) != 0
-          )
-            {
-                climbContactCount += 1;
-                climbNormal += normal;
-                lastClimbNormal = normal;
-                connectedBody = collision.rigidbody;
-            }
+
+            if (CollisionIsClimbable(upDot, layer))
+                UpdateStateForClimb(normal);
+            else if (CollisionIsGround(upDot))
+                UpdateStateForGround(normal);
         }
     }
 
-    #endregion
-
-    bool CheckClimbing()
+    private bool AttemptStick(Collision collision)
     {
-        if (Climbing)
+        bool collisionIsGround = collision.gameObject.layer == 6;
+        if (collisionIsGround)
+            return false;
+
+        Transform collisionTransform = collision.transform;
+        StickyProp prop = collisionTransform.GetComponent<StickyProp>();
+        bool didStick = false;
+        if (prop && prop.CanBeAbsorbed(this))
         {
-            if (climbContactCount > 1)
-            {
-                climbNormal.Normalize();
-                float upDot = Vector3.Dot(Vector3.up, climbNormal);
-                if (upDot >= minGroundDotProduct)
-                {
-                    climbNormal = lastClimbNormal;
-                }
-            }
-            groundContactCount = 1;
-            contactNormal = climbNormal;
-            return true;
+            StickProp(prop);
+            didStick = true;
         }
+        else if (ShouldDetachRandomProp(collision))
+            DetachRandomProp();
+
+        return didStick;
+    }
+
+    private void StickProp(StickyProp prop)
+    {
+        // TODO:
+        // - [ ] Add to the mass
+        // - [ ] Add to radius
+
+        prop.Stick(this);
+    }
+
+    private bool ShouldDetachRandomProp(Collision collision)
+    {
+        // TODO:
+        // - [ ] Get velocity of collision
+        // - [ ] Returns its comparative value against some threshold
         return false;
     }
 
-    void OnGUI()
+    private void DetachRandomProp()
     {
-        GUIStyle red = new GUIStyle();
-        red.normal.textColor = Color.red;
-        GUI.Label(new Rect(0, 80, 100, 100), "Katamari Size: " + size, red);
+        // TODO:
     }
 
-    public void OnPropPickup(StickyProp prop)
+    private void UpdateStateForGround(Vector3 collisionNormal)
     {
-        Expand(prop.size);
-        stuckProps.Add(prop);
+        groundContactCount += 1;
+        contactNormal += collisionNormal;
     }
 
-    public void OnRejectedCollision()
+    private void UpdateStateForClimb(Vector3 collisionNormal)
     {
-        //_rb.AddForce(Vector3.up * 50.0f);
+        climbContactCount += 1;
+        climbNormal += collisionNormal;
+        lastClimbNormal = collisionNormal;
     }
 
-    public void Expand(float s)
+    private bool CollisionIsClimbable(float collisionUpDot, int collisionLayer)
     {
-        sphereCollider.radius += 0.002f;
-        // add the newly picked up object's
-        // size to the katamari's
-        size += s * 0.002f;
-        // check size threshold here
+        // TODO:
+        // - [ ] Check yVelocity here to make sure katamari
+        //       can't snap to climb while falling.
+        return collisionUpDot >= minClimbDotProduct && (climbMask & (1 << collisionLayer)) != 0;
     }
 
-    // DEPRECATED
-    private void UpdateVelocity()
+    private bool CollisionIsGround(float collisionUpDot)
     {
-        // {
-        //     float accel = pushForce * Time.deltaTime;
-        //     velocity = rigidBody.velocity;
-        //     Vector3 desiredVelocity = input.nextForce * pushForce;
-        //     if (desiredVelocity != Vector3.zero)
-        //     {
-        //         velocity.x = Mathf.MoveTowards(velocity.x, desiredVelocity.x, accel);
-        //         velocity.z = Mathf.MoveTowards(velocity.z, desiredVelocity.z, accel);
-        //     }
-        //     // TODO:
-        //     // - [ ] If climbing, should update rotation about
-        //     //       axis perpendicular to the normal?
-        //     if (Climbing)
-        //         velocity.y = Mathf.MoveTowards(velocity.y, maxClimbSpeed, climbDelta * Time.deltaTime);
-        //     else
-        //         velocity.y += gravity * Time.deltaTime;
+        return collisionUpDot >= minGroundDotProduct;
     }
+
+    #endregion
 }

@@ -9,7 +9,7 @@ public class KatamariInputController : MonoBehaviour
 {
     private Vector2 leftThrottle = Vector2.zero;
     private Vector2 rightThrottle = Vector2.zero;
-    private bool lockCursor = true;
+    private bool lockCursor = false;
 
     [HideInInspector] public Vector3 nextForce = Vector3.zero;
 
