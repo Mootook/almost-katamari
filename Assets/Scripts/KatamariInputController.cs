@@ -35,15 +35,11 @@ public class KatamariInputController : MonoBehaviour
         bool rightPush = rightVertical > leftVertical && rightVertical > 0.0f;
         bool rightPull = Mathf.Abs(rightVertical) > leftVertical && Mathf.Abs(rightVertical) > 0.0f;
 
-        // clockwise = positive
         if (leftPush || rightPull)
-        {
             yRotation = (leftVertical - rightVertical) / 2.0f;
-        }
         else if (rightPush || leftPull)
-        {
             yRotation = -Mathf.Abs((leftVertical - rightVertical)) / 2.0f;
-        }
+
         return yRotation;
     }
 

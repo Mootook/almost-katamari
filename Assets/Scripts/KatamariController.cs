@@ -43,7 +43,6 @@ public class KatamariController : MonoBehaviour
 
     private bool OnGround => groundContactCount > 0;
     private bool Climbing => climbContactCount > 0 && Vector3.Dot(lastClimbNormal, velocity) < minClimbInputDot;
-    // private bool Climbing => climbContactCount > 0;
     public float Radius => sphereCollider.radius;
     public Vector3 Center => rigidBody.worldCenterOfMass;
 
@@ -70,8 +69,6 @@ public class KatamariController : MonoBehaviour
         minClimbInputDot = -Mathf.Cos(maxInputClimbAngle * Mathf.Deg2Rad);
     }
 
-    #region LifeCycle
-
     void Start()
     {
         stuckProps = new List<StickyProp>();
@@ -94,11 +91,16 @@ public class KatamariController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        Vector3 forward = new Vector3(0, rotationY, 0);
         ApplyInputTorque();
         ApplyInputForce();
 
         ClearState();
+    }
+
+    private Quaternion Forward()
+    {
+        Vector3 forward = new Vector3(0, rotationY, 0);
+        return Quaternion.Euler(forward);
     }
 
     private void ApplyInputTorque()
@@ -112,8 +114,7 @@ public class KatamariController : MonoBehaviour
             -lateralInput * torqueMultiplierWithMass
         );
 
-        Vector3 forward = new Vector3(0, rotationY, 0);
-        rigidBody.AddTorque(Quaternion.Euler(forward) * torque);
+        rigidBody.AddTorque(Forward() * torque);
     }
 
     private void ApplyInputForce()
@@ -129,8 +130,7 @@ public class KatamariController : MonoBehaviour
             forwardInput * forceForContactState
         );
 
-        Vector3 forward = new Vector3(0, rotationY, 0);
-        velocity = Quaternion.Euler(forward) * force;
+        velocity = Forward() * force;
         rigidBody.AddForce(velocity);
     }
 
@@ -156,7 +156,6 @@ public class KatamariController : MonoBehaviour
         contactNormal = climbNormal = Vector3.zero;
     }
 
-    #endregion
 
     #region Colllision
 
