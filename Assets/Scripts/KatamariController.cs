@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System;
 using UnityEngine;
 
 public class KatamariController : MonoBehaviour
@@ -10,7 +11,11 @@ public class KatamariController : MonoBehaviour
     private Rigidbody rigidBody;
     private List<StickyProp> stuckProps;
 
-    public float size = 1.0f;
+    public static event Action<StickyProp> propPickupEvent;
+
+    public float density = 5.0f;
+
+    public float massAdjustmentMultiplier = 0.25f;
 
     [Header("Movement")]
     [SerializeField, Range(0, 90)]
@@ -23,7 +28,7 @@ public class KatamariController : MonoBehaviour
     private float forceMultiplier = 250.0f;
 
     [Header("Climbing")]
-    public float climbForceMultiplier = 5.0f;
+    public float climbForceMultiplier = 35.0f;
     [SerializeField, Range(90, 180)]
     [Tooltip("The maximum angle of object that can be climb.")]
     float maxClimbAngle = 180.0f;
@@ -45,6 +50,8 @@ public class KatamariController : MonoBehaviour
     private bool Climbing => climbContactCount > 0 && Vector3.Dot(lastClimbNormal, velocity) < minClimbInputDot;
     public float Radius => sphereCollider.radius;
     public Vector3 Center => rigidBody.worldCenterOfMass;
+    public float Mass => rigidBody.mass;
+    public float AdjustedMass => Mass * massAdjustmentMultiplier;
 
     private float torqueMultiplierWithMass => torqueMultiplier * rigidBody.mass;
     private float airborneForceMultiplier => forceMultiplier / 2.0f;
@@ -55,6 +62,8 @@ public class KatamariController : MonoBehaviour
     public float rotationY;
 
     public SimpleCameraFollow cameraFollow;
+
+    private float volume;
 
     #endregion
 
@@ -81,6 +90,24 @@ public class KatamariController : MonoBehaviour
         defaultColor = katamariRenderer.material.GetColor("_Color");
 
         cameraFollow.SetInitialParameters();
+
+        volume = SphericalVolume();
+        rigidBody.mass = SphericalMass();
+    }
+
+    private float CalculateRadius()
+    {
+        return Mathf.Pow((3 * volume) / (4 * Mathf.PI), (1.0f / 3.0f));
+    }
+
+    private float SphericalVolume()
+    {
+        return (4.0f / 3.0f) * Mathf.PI * Mathf.Pow(sphereCollider.radius, 3);
+    }
+
+    private float SphericalMass()
+    {
+        return volume * density;
     }
 
     private void Update()
@@ -88,19 +115,14 @@ public class KatamariController : MonoBehaviour
         rotationY += input.nextForce.y * Time.deltaTime * rotationMultiplier;
     }
 
-
     private void FixedUpdate()
     {
         ApplyInputTorque();
         ApplyInputForce();
 
-        ClearState();
-    }
+        AdjustVerticalVelocity();
 
-    private Quaternion Forward()
-    {
-        Vector3 forward = new Vector3(0, rotationY, 0);
-        return Quaternion.Euler(forward);
+        ClearState();
     }
 
     private void ApplyInputTorque()
@@ -126,7 +148,7 @@ public class KatamariController : MonoBehaviour
 
         Vector3 force = new Vector3(
             lateralInput * forceForContactState,
-            ClimbingForce(),
+            0.0f,
             forwardInput * forceForContactState
         );
 
@@ -134,21 +156,24 @@ public class KatamariController : MonoBehaviour
         rigidBody.AddForce(velocity);
     }
 
-    float ClimbingForce()
+    private void AdjustVerticalVelocity()
     {
-        float upwardVelocity = 0.0f;
+        Vector3 velocity = rigidBody.velocity;
+        float gravity = -9.81f;
+        float forceToVelocityFactor = 0.0001f;
         if (Climbing)
-        {
-            katamariRenderer.material.SetColor("_Color", Color.red);
-            upwardVelocity += climbForceMultiplier * rigidBody.mass;
-        }
+            velocity.y = climbForceMultiplier * forceToVelocityFactor;
         else
-        {
-            katamariRenderer.material.SetColor("_Color", defaultColor);
-        }
-        return upwardVelocity;
+            velocity.y += gravity * Time.deltaTime;
+
+        rigidBody.velocity = velocity;
     }
 
+    private Quaternion Forward()
+    {
+        Vector3 forward = new Vector3(0, rotationY, 0);
+        return Quaternion.Euler(forward);
+    }
 
     private void ClearState()
     {
@@ -197,7 +222,7 @@ public class KatamariController : MonoBehaviour
         Transform collisionTransform = collision.transform;
         StickyProp prop = collisionTransform.GetComponent<StickyProp>();
         bool didStick = false;
-        if (prop && prop.CanBeAbsorbed(this))
+        if (prop && prop.CanBeAbsorbed(AdjustedMass))
         {
             StickProp(prop);
             didStick = true;
@@ -210,11 +235,14 @@ public class KatamariController : MonoBehaviour
 
     private void StickProp(StickyProp prop)
     {
-        // TODO:
-        // - [ ] Add to the mass
-        // - [ ] Add to radius
+        rigidBody.mass += prop.Mass;
+        volume += prop.volume;
+        sphereCollider.radius = CalculateRadius();
 
         prop.Stick(this);
+
+        if (propPickupEvent != null)
+            propPickupEvent(prop);
     }
 
     private bool ShouldDetachRandomProp(Collision collision)
@@ -257,4 +285,12 @@ public class KatamariController : MonoBehaviour
     }
 
     #endregion
+
+    void OnGUI()
+    {
+        GUIStyle red = new GUIStyle();
+        red.normal.textColor = Color.red;
+        GUI.Label(new Rect(0, 0, 100, 100), "Is Climbing: " + Climbing, red);
+    }
+
 }

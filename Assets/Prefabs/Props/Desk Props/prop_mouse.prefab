@@ -112,8 +112,20 @@ PrefabInstance:
       value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: 7125186531162140554, guid: c87c54192b67624469b8ae3dad97b3b5, type: 3}
+      propertyPath: density
+      value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7125186531162140554, guid: c87c54192b67624469b8ae3dad97b3b5, type: 3}
       propertyPath: isSticky
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7125186531162140554, guid: c87c54192b67624469b8ae3dad97b3b5, type: 3}
+      propertyPath: propName
+      value: Mouse
+      objectReference: {fileID: 0}
+    - target: {fileID: 7125186531162140555, guid: c87c54192b67624469b8ae3dad97b3b5, type: 3}
+      propertyPath: m_Mass
+      value: 3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c87c54192b67624469b8ae3dad97b3b5, type: 3}

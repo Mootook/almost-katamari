@@ -5,12 +5,12 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     private static GameManager _instance;
-    public static GameManager Instance { get { return _instance; } }
+    public static GameManager Instance => _instance;
 
     public AudioClip soundPickUp;
     public AudioClip soundCollision;
 
-    private AudioSource _audioSource;
+    private AudioSource collisionAudio;
 
     private void Awake()
     {
@@ -19,13 +19,18 @@ public class GameManager : MonoBehaviour
         else
             _instance = this;
 
-        _audioSource = GetComponent<AudioSource>();
+        collisionAudio = GetComponent<AudioSource>();
+        SubscribeEvents();
     }
 
-    public void OnPropPickup(GameObject prop)
+    private void SubscribeEvents()
+    {
+        KatamariController.propPickupEvent += OnPropPickup;
+    }
+
+    public void OnPropPickup(StickyProp prop)
     {
         PlayPickupSound();
-        // use the prop in the UI
     }
 
     public void OnPropRejection()
@@ -35,11 +40,11 @@ public class GameManager : MonoBehaviour
 
     public void PlayPickupSound()
     {
-        _audioSource.PlayOneShot(soundPickUp);
+        collisionAudio.PlayOneShot(soundPickUp);
     }
 
     public void PlayCollisionSound()
     {
-        // _audioSource.PlayOneShot(soundCollision);
+        // collisionAudio.PlayOneShot(soundCollision);
     }
 }

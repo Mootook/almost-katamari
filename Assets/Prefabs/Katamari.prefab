@@ -128,16 +128,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   size: 1
-  pushForce: 20
   maxGroundAngle: 25
-  maxClimbSpeed: 2
-  climbDelta: 2
+  rotationMultiplier: 80
+  torqueMultiplier: 750
+  forceMultiplier: 250
+  climbForceMultiplier: 5
   maxClimbAngle: 140
   maxInputClimbAngle: 25
   climbMask:
     serializedVersion: 2
     m_Bits: 4294967295
-  gravity: -9.81
+  rotationY: 0
+  cameraFollow: {fileID: 0}
 --- !u!114 &2757326761975444867
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -151,7 +153,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nextForce: {x: 0, y: 0, z: 0}
-  _lockCursor: 0
 --- !u!114 &2757326761975444864
 MonoBehaviour:
   m_ObjectHideFlags: 0

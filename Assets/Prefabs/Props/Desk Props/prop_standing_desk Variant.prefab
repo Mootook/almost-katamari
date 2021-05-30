@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 809318966}
   - component: {fileID: 809318967}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: table_top
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -54,7 +54,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1120066419}
   - component: {fileID: 1120066420}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: leg_2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -98,7 +98,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1861627828}
   - component: {fileID: 1861627829}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: leg_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -142,7 +142,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7988960321013976047}
   - component: {fileID: 3206853926928210822}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: foot_2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -186,7 +186,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8781815862072364385}
   - component: {fileID: 2026874546621840163}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: foot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -282,6 +282,10 @@ PrefabInstance:
     - target: {fileID: 7125186531162140552, guid: c87c54192b67624469b8ae3dad97b3b5, type: 3}
       propertyPath: m_Name
       value: prop_standing_desk Variant
+      objectReference: {fileID: 0}
+    - target: {fileID: 7125186531162140554, guid: c87c54192b67624469b8ae3dad97b3b5, type: 3}
+      propertyPath: propName
+      value: Standing Desk
       objectReference: {fileID: 0}
     - target: {fileID: 7125186531287460716, guid: c87c54192b67624469b8ae3dad97b3b5, type: 3}
       propertyPath: m_Name

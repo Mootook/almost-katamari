@@ -84,6 +84,14 @@ PrefabInstance:
       propertyPath: isSticky
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 7125186531162140554, guid: c87c54192b67624469b8ae3dad97b3b5, type: 3}
+      propertyPath: propName
+      value: Pencil
+      objectReference: {fileID: 0}
+    - target: {fileID: 7125186531162140555, guid: c87c54192b67624469b8ae3dad97b3b5, type: 3}
+      propertyPath: m_Mass
+      value: 5
+      objectReference: {fileID: 0}
     - target: {fileID: 7125186531287460719, guid: c87c54192b67624469b8ae3dad97b3b5, type: 3}
       propertyPath: m_LocalScale.x
       value: 0.030173
