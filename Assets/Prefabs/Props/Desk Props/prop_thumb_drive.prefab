@@ -113,15 +113,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7125186531162140554, guid: c87c54192b67624469b8ae3dad97b3b5, type: 3}
       propertyPath: density
-      value: 0.5
+      value: 1000
       objectReference: {fileID: 0}
     - target: {fileID: 7125186531162140554, guid: c87c54192b67624469b8ae3dad97b3b5, type: 3}
       propertyPath: propName
       value: Flash Drive
       objectReference: {fileID: 0}
+    - target: {fileID: 7125186531162140554, guid: c87c54192b67624469b8ae3dad97b3b5, type: 3}
+      propertyPath: massComparisonMultiplier
+      value: 0.1
+      objectReference: {fileID: 0}
     - target: {fileID: 7125186531162140555, guid: c87c54192b67624469b8ae3dad97b3b5, type: 3}
       propertyPath: m_Mass
-      value: 1
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 7125186531287460718, guid: c87c54192b67624469b8ae3dad97b3b5, type: 3}
       propertyPath: m_Mesh

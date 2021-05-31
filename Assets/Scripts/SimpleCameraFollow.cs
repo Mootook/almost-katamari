@@ -22,7 +22,7 @@ public class SimpleCameraFollow : MonoBehaviour
         if (targetDistance > orbitRadius)
             orbitRadius = Mathf.Lerp(orbitRadius, targetDistance, Time.deltaTime);
 
-        transform.position = katamari.transform.position + Quaternion.Euler(0, katamari.rotationY, 0) * boomDirection.normalized * orbitRadius;
+        transform.position = katamari.transform.position + katamari.Forward() * boomDirection.normalized * orbitRadius;
         transform.LookAt(katamari.transform);
     }
 }

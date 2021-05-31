@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class StickyProp : MonoBehaviour
 {
-    public Rigidbody rigidBody;
+    private Rigidbody rigidBody;
 
     public float density = 1.0f;
     public float Mass => rigidBody.mass;
@@ -13,50 +13,66 @@ public class StickyProp : MonoBehaviour
         get;
         private set;
     }
-    public string propName
-    {
-        get;
-        private set;
-    }
+    public string propName;
     public float absorbedToCenterDivisor = 1.2f;
 
     private readonly string COMPOUND_COLLIDER_TAG = "PropMesh";
     private readonly string ABSORBED_LAYER = "Absorbed";
 
+    // lower allows prop to be picked up earlier
+    // otherwise it must match the katamari's full mass;
+    public float massComparisonMultiplier = 0.25f;
+
     private void Start()
     {
         rigidBody = GetComponent<Rigidbody>();
-
-        SetInitialMass();
     }
 
-    private void SetInitialMass()
+    private float CalculateMass()
     {
-        Vector3 size = LargestColliderSize();
-        volume = ColliderVolume(size);
-        rigidBody.mass = ColliderMass(size);
+        List<Vector3> colliderSizes = ColliderSizes();
+        foreach (Vector3 size in colliderSizes)
+            volume += ColliderVolume(size);
+        return ColliderMass();
+    }
+
+    private List<Vector3> ColliderSizes()
+    {
+        List<Vector3> colliderSizes = new List<Vector3>();
+        BoxCollider[] colliders = AllColliders();
+
+        foreach (BoxCollider collider in colliders)
+            colliderSizes.Add(collider.size);
+        return colliderSizes;
+    }
+
+    private BoxCollider[] AllColliders()
+    {
+        GameObject compoundCollider = CompoundCollider();
+        BoxCollider[] colliders = compoundCollider.GetComponentsInChildren<BoxCollider>();
+        if (colliders == null || colliders.Length == 0)
+        {
+            BoxCollider singularCollider = compoundCollider.GetComponent<BoxCollider>();
+            colliders = new BoxCollider[] { singularCollider };
+        }
+        return colliders;
     }
 
     private Vector3 LargestColliderSize()
     {
-        GameObject compoundCollider = CompoundCollider();
-        BoxCollider[] colliders = compoundCollider.GetComponentsInChildren<BoxCollider>();
+        BoxCollider[] colliders = AllColliders();
         Vector3 largestBoxColliderSize = Vector3.zero;
+
         foreach (BoxCollider collider in colliders)
         {
             if (collider.size.magnitude > largestBoxColliderSize.magnitude)
                 largestBoxColliderSize = collider.size;
         }
-        // TODO:
-        // - [ ] Adjust box colliders of prefabs
-        //       to set collider and not transform size.
         return largestBoxColliderSize;
     }
 
-    private float ColliderMass(Vector3 size)
+    private float ColliderMass()
     {
-        // assumes cube
-        float volume = ColliderVolume(size);
         return volume * density;
     }
 
@@ -77,16 +93,9 @@ public class StickyProp : MonoBehaviour
         return null;
     }
 
-    public bool CanBeAbsorbed(float adjustedKatamariMass)
+    public bool CanBeAbsorbed(float katamariMass)
     {
-        Debug.Log(
-            propName +
-            " has mass of " +
-            Mass +
-            " and katamari's determination is " +
-            adjustedKatamariMass
-        );
-        return Mass < adjustedKatamariMass;
+        return Mass < katamariMass * massComparisonMultiplier;
     }
 
     private Transform ChildColliderParent()

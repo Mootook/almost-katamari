@@ -1,49 +1,18 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &872170216884133223
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 3349626888383588619}
-  - component: {fileID: 3810324215560796337}
-  m_Layer: 0
-  m_Name: collider
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &3349626888383588619
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 872170216884133223}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.002, y: 0.015, z: 2.2119e-10}
-  m_LocalScale: {x: 0.1875, y: 0.02326953, z: 0.05}
-  m_Children: []
-  m_Father: {fileID: 4059306330397783855}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &3810324215560796337
+--- !u!65 &1167441700433270615
 BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 872170216884133223}
+  m_GameObject: {fileID: 4059306330397783852}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 0.1875, y: 0.02326953, z: 0.05}
+  m_Center: {x: 0.002, y: 0.015, z: 2.2119e-10}
 --- !u!1001 &6535905032336038976
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -117,12 +86,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7125186531162140555, guid: c87c54192b67624469b8ae3dad97b3b5, type: 3}
       propertyPath: m_Mass
-      value: 2
+      value: 50
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c87c54192b67624469b8ae3dad97b3b5, type: 3}
---- !u!4 &4059306330397783855 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 7125186531287460719, guid: c87c54192b67624469b8ae3dad97b3b5, type: 3}
+--- !u!1 &4059306330397783852 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7125186531287460716, guid: c87c54192b67624469b8ae3dad97b3b5, type: 3}
   m_PrefabInstance: {fileID: 6535905032336038976}
   m_PrefabAsset: {fileID: 0}

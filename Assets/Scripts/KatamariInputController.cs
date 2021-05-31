@@ -9,18 +9,8 @@ public class KatamariInputController : MonoBehaviour
 {
     private Vector2 leftThrottle = Vector2.zero;
     private Vector2 rightThrottle = Vector2.zero;
-    private bool lockCursor = false;
 
     [HideInInspector] public Vector3 nextForce = Vector3.zero;
-
-    private void Start()
-    {
-        if (lockCursor)
-        {
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
-        }
-    }
 
     private float InputToYRotation()
     {
@@ -29,15 +19,20 @@ public class KatamariInputController : MonoBehaviour
         float leftVertical = leftThrottle.y;
         float rightVertical = rightThrottle.y;
 
-        bool leftPush = leftVertical > rightVertical && leftVertical > 0.0f;
-        bool leftPull = Mathf.Abs(leftVertical) > rightVertical && Mathf.Abs(leftVertical) > 0.0f;
+        float deadZoneEpsilon = 0.05f;
 
-        bool rightPush = rightVertical > leftVertical && rightVertical > 0.0f;
-        bool rightPull = Mathf.Abs(rightVertical) > leftVertical && Mathf.Abs(rightVertical) > 0.0f;
+        bool leftPush = leftVertical > deadZoneEpsilon;
+        bool leftPull = leftVertical < -deadZoneEpsilon;
 
-        if (leftPush || rightPull)
+        bool rightPush = rightVertical > deadZoneEpsilon;
+        bool rightPull = rightVertical < -deadZoneEpsilon;
+
+        // TODO:
+        // - [ ] Make sure we're not moving
+        //       so we don't rotate unnecessarily
+        if ((leftPush && !rightPush) || (rightPull && !leftPull))
             yRotation = (leftVertical - rightVertical) / 2.0f;
-        else if (rightPush || leftPull)
+        else if ((rightPush && !leftPush) || (leftPull && !rightPull))
             yRotation = -Mathf.Abs((leftVertical - rightVertical)) / 2.0f;
 
         return yRotation;
@@ -46,7 +41,7 @@ public class KatamariInputController : MonoBehaviour
     private Vector2 InputToFlatMovement()
     {
         Vector2 input = Vector2.zero;
-        float inputDot = Vector3.Dot(leftThrottle, rightThrottle);
+        float inputDot = Vector2.Dot(leftThrottle, rightThrottle);
 
         bool inputsApproximatelySameDirection = inputDot > 0.0f;
         if (inputsApproximatelySameDirection)

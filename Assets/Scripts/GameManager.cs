@@ -6,6 +6,7 @@ public class GameManager : MonoBehaviour
 {
     private static GameManager _instance;
     public static GameManager Instance => _instance;
+    public bool lockCursorWhilePlaying;
 
     public AudioClip soundPickUp;
     public AudioClip soundCollision;
@@ -21,6 +22,20 @@ public class GameManager : MonoBehaviour
 
         collisionAudio = GetComponent<AudioSource>();
         SubscribeEvents();
+    }
+
+    private void Start()
+    {
+        LockCursor();
+    }
+
+    private void LockCursor()
+    {
+        if (lockCursorWhilePlaying)
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+        }
     }
 
     private void SubscribeEvents()

@@ -11,10 +11,11 @@ public class KatamariController : MonoBehaviour
     private Rigidbody rigidBody;
     private List<StickyProp> stuckProps;
 
+    public SimpleCameraFollow cameraFollow;
+
     public static event Action<StickyProp> propPickupEvent;
 
     public float density = 5.0f;
-
     public float massAdjustmentMultiplier = 0.25f;
 
     [Header("Movement")]
@@ -44,25 +45,21 @@ public class KatamariController : MonoBehaviour
     private Vector3 contactNormal, climbNormal, lastClimbNormal;
 
     private int groundContactCount, climbContactCount;
-    private float minGroundDotProduct, minClimbDotProduct, minClimbInputDot;
+    private float minGroundDotProduct, minClimbDotProduct, maxClimbInputDotProduct;
 
     private bool OnGround => groundContactCount > 0;
-    private bool Climbing => climbContactCount > 0 && Vector3.Dot(lastClimbNormal, velocity) < minClimbInputDot;
-    public float Radius => sphereCollider.radius;
+    private bool Climbing => climbContactCount > 0 && Vector3.Dot(lastClimbNormal.normalized, velocity.normalized) < maxClimbInputDotProduct;
+
     public Vector3 Center => rigidBody.worldCenterOfMass;
+
+    public float Radius => sphereCollider.radius;
     public float Mass => rigidBody.mass;
     public float AdjustedMass => Mass * massAdjustmentMultiplier;
 
     private float torqueMultiplierWithMass => torqueMultiplier * rigidBody.mass;
     private float airborneForceMultiplier => forceMultiplier / 2.0f;
 
-    private Renderer katamariRenderer;
-    private Color defaultColor;
-
     public float rotationY;
-
-    public SimpleCameraFollow cameraFollow;
-
     private float volume;
 
     #endregion
@@ -70,12 +67,9 @@ public class KatamariController : MonoBehaviour
     private void OnValidate()
     {
         // https://catlikecoding.com/unity/tutorials/movement/physics/
-        // for explanation of getting dot product from angle.
         minGroundDotProduct = Mathf.Cos(maxGroundAngle * Mathf.Deg2Rad);
         minClimbDotProduct = Mathf.Cos(maxClimbAngle * Mathf.Deg2Rad);
-        // get the negative, as this is a "maximum" allowance being
-        // created
-        minClimbInputDot = -Mathf.Cos(maxInputClimbAngle * Mathf.Deg2Rad);
+        maxClimbInputDotProduct = -Mathf.Cos(maxInputClimbAngle * Mathf.Deg2Rad);
     }
 
     void Start()
@@ -86,13 +80,9 @@ public class KatamariController : MonoBehaviour
         rigidBody = GetComponent<Rigidbody>();
         sphereCollider = GetComponent<SphereCollider>();
 
-        katamariRenderer = GetComponent<Renderer>();
-        defaultColor = katamariRenderer.material.GetColor("_Color");
-
         cameraFollow.SetInitialParameters();
 
         volume = SphericalVolume();
-        rigidBody.mass = SphericalMass();
     }
 
     private float CalculateRadius()
@@ -158,18 +148,18 @@ public class KatamariController : MonoBehaviour
 
     private void AdjustVerticalVelocity()
     {
-        Vector3 velocity = rigidBody.velocity;
+        Vector3 adjustedVelocity = rigidBody.velocity;
         float gravity = -9.81f;
-        float forceToVelocityFactor = 0.0001f;
+        float forceToVelocityFactor = 0.001f;
         if (Climbing)
-            velocity.y = climbForceMultiplier * forceToVelocityFactor;
+            adjustedVelocity.y = climbForceMultiplier * forceToVelocityFactor;
         else
-            velocity.y += gravity * Time.deltaTime;
+            adjustedVelocity.y += gravity * Time.deltaTime;
 
-        rigidBody.velocity = velocity;
+        rigidBody.velocity = adjustedVelocity;
     }
 
-    private Quaternion Forward()
+    public Quaternion Forward()
     {
         Vector3 forward = new Vector3(0, rotationY, 0);
         return Quaternion.Euler(forward);
@@ -180,7 +170,6 @@ public class KatamariController : MonoBehaviour
         groundContactCount = climbContactCount = 0;
         contactNormal = climbNormal = Vector3.zero;
     }
-
 
     #region Colllision
 
@@ -196,7 +185,6 @@ public class KatamariController : MonoBehaviour
 
     private void EvaluateCollision(Collision collision)
     {
-        bool didStick = AttemptStick(collision);
         if (AttemptStick(collision))
             return;
 
@@ -222,7 +210,7 @@ public class KatamariController : MonoBehaviour
         Transform collisionTransform = collision.transform;
         StickyProp prop = collisionTransform.GetComponent<StickyProp>();
         bool didStick = false;
-        if (prop && prop.CanBeAbsorbed(AdjustedMass))
+        if (prop && prop.CanBeAbsorbed(Mass))
         {
             StickProp(prop);
             didStick = true;
@@ -290,7 +278,12 @@ public class KatamariController : MonoBehaviour
     {
         GUIStyle red = new GUIStyle();
         red.normal.textColor = Color.red;
+        float dot = Vector3.Dot(lastClimbNormal.normalized, velocity.normalized);
+
         GUI.Label(new Rect(0, 0, 100, 100), "Is Climbing: " + Climbing, red);
+        GUI.Label(new Rect(0, 20, 100, 100), "Dot" + dot, red);
+        GUI.Label(new Rect(0, 40, 100, 100), "Max Input Dot" + maxClimbInputDotProduct, red);
+        GUI.Label(new Rect(0, 60, 100, 100), "Next Force" + input.nextForce, red);
     }
 
 }

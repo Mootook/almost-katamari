@@ -82,7 +82,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7125186531162140554, guid: c87c54192b67624469b8ae3dad97b3b5, type: 3}
       propertyPath: density
-      value: 2
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 7125186531162140554, guid: c87c54192b67624469b8ae3dad97b3b5, type: 3}
       propertyPath: isSticky
@@ -91,6 +91,10 @@ PrefabInstance:
     - target: {fileID: 7125186531162140554, guid: c87c54192b67624469b8ae3dad97b3b5, type: 3}
       propertyPath: propName
       value: Notepad
+      objectReference: {fileID: 0}
+    - target: {fileID: 7125186531162140555, guid: c87c54192b67624469b8ae3dad97b3b5, type: 3}
+      propertyPath: m_Mass
+      value: 250
       objectReference: {fileID: 0}
     - target: {fileID: 7125186531287460719, guid: c87c54192b67624469b8ae3dad97b3b5, type: 3}
       propertyPath: m_LocalScale.x
